@@ -11,8 +11,8 @@ jobs:
       - run:
           name: "Install"
           command: |
-            pip install numpy imageio
-            pip install -e .[all]
+            sudo pip install numpy imageio
+            sudo pip install -e .[all]
 
       - run:
           name: "Install"
