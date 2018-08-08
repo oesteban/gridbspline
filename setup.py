@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Author: oesteban
-# @Date:   2015-11-19 16:44:27
-# @Last Modified by:   oesteban
+# emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-
+# vi: set ft=python sts=4 ts=4 sw=4 et:
 """ GRIDBSPLINE setup script """
 
 
@@ -10,7 +8,10 @@ def main():
     """ Install entry-point """
     import os
     from setuptools import setup, find_packages
-    from gridbspline.__about__ import (
+    from setuptools.extension import Extension
+    from numpy import get_include
+
+    from gridbspline.__about__ import (  # noqa
         __version__,
         __author__,
         __email__,
@@ -49,6 +50,13 @@ def main():
         version = versioneer.get_version()
         cmdclass = versioneer.get_cmdclass()
 
+    extensions = [Extension(
+        "gridbspline.maths",
+        ["gridbspline/maths.pyx"],
+        include_dirs=[get_include(), "/usr/local/include/"],
+        library_dirs=["/usr/lib/"]),
+    ]
+
     setup(
         name=__packagename__,
         version=version,
@@ -57,31 +65,21 @@ def main():
         author=__author__,
         author_email=__email__,
         license=__license__,
-        maintainer_email='crn.poldracklab@gmail.com',
+        url=__url__,
+        maintainer_email=__email__,
         classifiers=CLASSIFIERS,
+        download_url=DOWNLOAD_URL,
         # Dependencies handling
         setup_requires=SETUP_REQUIRES,
         install_requires=REQUIRES,
         dependency_links=LINKS_REQUIRES,
         tests_require=TESTS_REQUIRES,
         extras_require=EXTRA_REQUIRES,
-        url=__url__,
-        download_url=DOWNLOAD_URL,
-        entry_points={'console_scripts': [
-            'mriqc=mriqc.bin.mriqc_run:main',
-            'mriqc_clf=mriqc.bin.mriqc_clf:main',
-            'mriqc_plot=mriqc.bin.mriqc_plot:main',
-            'abide2bids=mriqc.bin.abide2bids:main',
-            'fs2gif=mriqc.bin.fs2gif:main',
-            'dfcheck=mriqc.bin.dfcheck:main',
-            'nib-hash=mriqc.bin.nib_hash:main',
-            'participants=mriqc.bin.subject_wrangler:main',
-            'mriqc_labeler=mriqc.bin.labeler:main',
-            'mriqcwebapi_test=mriqc.bin.mriqcwebapi_test:main',
-        ]},
-        packages=find_packages(exclude=['*.tests']),
         package_data=pkg_data,
+        entry_points={'console_scripts': []},
+        packages=find_packages(exclude=('tests',)),
         zip_safe=False,
+        ext_modules=extensions,
         cmdclass=cmdclass,
     )
 

@@ -5,6 +5,7 @@
 """
 from sys import float_info
 import numpy as np
+from .maths import cubic
 
 DBL_EPSILON = float_info.epsilon
 
@@ -100,19 +101,28 @@ class BsplineNDInterpolator(object):
         Interpolation at coordinates
         Parameters
         ----------
-        xi : ndarray of shape (..., ndim)
+        coords : ndarray of shape (..., ndim)
             The coordinates to sample the gridded data at
         """
-
-        return [self._interpolate for xi in coords]
+        for xi in coords:
+            yield self._interpolate(xi)
 
     def _interpolate(self, xi):
-        indexes = {}
+        indexes = []
         offset = 0.0 if self._order & 1 else 0.5
         for dim in range(self.ndim):
             first = int(np.floor(xi[dim] + offset) - self._order // 2)
-            indexes[dim] = list(range(first, first + self._order + 1))
-        print(indexes)
+            indexes.append(list(range(first, first + self._order + 1)))
+
+        ndindex = np.moveaxis(
+            np.array(np.meshgrid(*indexes, indexing='ij')), 0, -1).reshape(
+            -1, self.ndim)
+
+        vbspl = np.vectorize(cubic)
+        weights = np.prod(vbspl(ndindex - xi), axis=-1)
+        ndindex = [tuple(v) for v in ndindex]
+        coeffs = np.array([self._coeffs[v] for v in ndindex])
+        return weights.dot(coeffs)
 
 
 def _samples_to_coeffs(line, poles, tol=DBL_EPSILON):
