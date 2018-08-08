@@ -11,6 +11,7 @@ jobs:
       - run:
           name: "Install"
           command: |
+            pip install numpy imageio
             pip install -e .[all]
 
       - run:
@@ -43,7 +44,7 @@ jobs:
 
 workflows:
   version: 2
-  fitlins_tests:
+  gridbspline:
     jobs:
       - build_test:
           filters:
