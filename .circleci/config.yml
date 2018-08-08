@@ -14,7 +14,7 @@ jobs:
             pushd $HOME
             sudo pip install numpy imageio
             popd
-            sudo pip install -e .[all]
+            pip install -e .[all]
 
       - run:
           name: "Test interpolation"
@@ -22,7 +22,7 @@ jobs:
             py.test --doctest-modules
 
       - run:
-          name: Test Deploy to PyPi
+          name: Build package and test Deploy to PyPi
           command: |
             pushd $HOME
             sudo pip install -U twine wheel setuptools
