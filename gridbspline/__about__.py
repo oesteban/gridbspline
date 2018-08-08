@@ -23,7 +23,9 @@ __description__ = """\
 N-Dimensional, gridded, and multivariate data interpolation using splines\
 """
 __longdesc__ = """\
-N-Dimensional, gridded, and multivariate data interpolation using splines\
+N-Dimensional, gridded, and multivariate data interpolation using splines. \
+This package generalizes the interpolation code of P. Thévenaz \
+(http://bigwww.epfl.ch/thevenaz/interpolation/) to Python.\
 """
 
 __url__ = 'http://gridbspline.readthedocs.org/'

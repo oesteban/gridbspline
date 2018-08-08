@@ -104,10 +104,29 @@ class BsplineNDInterpolator(object):
         coords : ndarray of shape (..., ndim)
             The coordinates to sample the gridded data at
         """
+
+        if self._order != 3:
+            raise NotImplementedError
+
         for xi in coords:
             yield self._interpolate(xi)
 
     def _interpolate(self, xi):
+        """Evaluates the interpolated value for position xi
+
+        Calculates the bspline weights corresponding to the samples
+        around xi and evaluates the interpolated value
+
+        Parameters
+        ----------
+
+        xi : array_like of shape (ndim,)
+            The position at which the image is interpolated
+
+        """
+        if self._order != 3:
+            raise NotImplementedError
+
         indexes = []
         offset = 0.0 if self._order & 1 else 0.5
         for dim in range(self.ndim):
@@ -126,6 +145,24 @@ class BsplineNDInterpolator(object):
 
 
 def _samples_to_coeffs(line, poles, tol=DBL_EPSILON):
+    """Filter a 1D series to obtain the corresponding coefficients
+
+    BSplines are separable, and therefore dimensions can be filtered
+    sequentially. Processing of "lines" is independent (i.e. parallelizable)
+
+    Parameters
+    ----------
+
+    line : array_like of shape (N, C)
+        N is the number of samples along the processed axis
+        and C is the number of components of the data.
+    poles : list of float
+        Poles corresponding to the B-Spline basis selected
+
+    tol : float
+        A tolerance value extending filtering to infinite
+
+    """
     # Compute the overall gain and apply
     gain = np.prod((1 - poles) * (1 - 1. / poles))
     line *= gain
@@ -146,6 +183,7 @@ def _samples_to_coeffs(line, poles, tol=DBL_EPSILON):
 
 
 def _causal_c0(line, z, tol=DBL_EPSILON):
+    """Calculate the first coefficient of the causal filter"""
     length = len(line)
     horiz = length
     if tol > 0:
@@ -174,4 +212,5 @@ def _causal_c0(line, z, tol=DBL_EPSILON):
 
 
 def _anticausal_cn(line, z):
+    """Calculate the last coefficient of the anticausal filter"""
     return (z / (z * z - 1.0)) * (z * line[-2] + line[-1])
