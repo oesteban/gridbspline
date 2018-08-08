@@ -11,8 +11,9 @@ jobs:
       - run:
           name: "Install"
           command: |
-            cd 
+            pushd $HOME
             sudo pip install numpy imageio
+            popd
             sudo pip install -e .[all]
 
       - run:
@@ -23,9 +24,10 @@ jobs:
       - run:
           name: Test Deploy to PyPi
           command: |
-            cd
+            pushd $HOME
             sudo pip install -U twine wheel setuptools
             echo "${CIRCLE_TAG}" > gridbspline/VERSION
+            popd
             python setup.py sdist bdist_wheel
             twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
@@ -40,8 +42,10 @@ jobs:
       - run:
           name: Deploy to PyPi
           command: |
+            pushd $HOME
             sudo pip install -U twine wheel setuptools
             sudo pip install numpy imageio
+            popd
             echo "${CIRCLE_TAG}" > gridbspline/VERSION
             python setup.py sdist bdist_wheel
             twine upload dist/*
