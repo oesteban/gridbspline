@@ -93,6 +93,10 @@ class BsplineNDInterpolator(object):
     slots = ['_order', '_off_bounds', '_coeffs', '_fill_value', 'ndim', 'ncomp', 'shape']
 
     def __init__(self, data, order=3, off_bounds='mirror', fill_value=0.0):
+
+        if off_bounds not in ['mirror', 'constant']:
+            raise ValueError('Unknown off bounds strategy "%s". '
+                             'Please use one of "mirror" or "constant".' % off_bounds)
         data = np.array(data, dtype='float32')
         self._order = order
         self._off_bounds = off_bounds
@@ -167,7 +171,7 @@ class BsplineNDInterpolator(object):
             if np.any(offbounds):
                 # Deal with offbounds samples
                 if self._off_bounds == 'constant':
-                    coeffs.append([0.0] * self.ncomp)
+                    coeffs.append([self._fill_value] * self.ncomp)
                     continue
                 ijk = np.array(ijk, dtype=int)
                 ijk[ijk < 0] *= -1
