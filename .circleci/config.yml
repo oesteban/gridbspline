@@ -1,0 +1,59 @@
+version: 2
+jobs:
+  build_test:
+    docker:
+      - image: circleci/python:3.7
+
+    working_directory: /tmp/src/gridbspline
+
+    steps:
+      - checkout
+      - run:
+          name: "Install"
+          command: |
+            pip install -e .[all]
+
+      - run:
+          name: "Install"
+          command: |
+            py.test --doctest-modules
+
+      - run:
+          name: Test Deploy to PyPi
+          command: |
+            pip install "setuptools>=27.0" twine
+            echo "${CIRCLE_TAG}" > gridbspline/VERSION
+            python setup.py sdist
+
+  deploy:
+    docker:
+      - image: circleci/python:3.7
+
+    working_directory: /tmp/src/gridbspline
+
+    steps:
+      - checkout
+      - run:
+          name: Deploy to PyPi
+          command: |
+            pip install "setuptools>=27.0" twine
+            echo "${CIRCLE_TAG}" > gridbspline/VERSION
+            python setup.py sdist
+            twine upload dist/*
+
+workflows:
+  version: 2
+  fitlins_tests:
+    jobs:
+      - build_test:
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - build_test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
