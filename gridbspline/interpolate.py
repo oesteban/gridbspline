@@ -66,6 +66,24 @@ class BsplineNDInterpolator(object):
     -------
     __call__
 
+    Example
+    -------
+
+    >>> import imageio
+    >>> import numpy as np
+    >>> img = imageio.imread(
+    ...     'https://farm9.staticflickr.com/8674/16504233985_9f1060624e_m_d.jpg')
+    >>> interpolator = BsplineNDInterpolator(img)
+    >>> mat = np.eye(3)
+    >>> mat[:2, 2] = [-13.5, 24.2]
+    >>> indexes = (list(range(img.shape[0])), list(range(img.shape[1])))
+    >>> ndindex = np.moveaxis(np.array(np.meshgrid(
+    ...     *indexes, indexing='ij')), 0, -1).reshape(-1, 2)
+    >>> mapped = np.dot(mat, np.hstack(
+    ...     (ndindex.astype(float), np.ones((ndindex.shape[0], 1)))).T)[:2, :].T
+    >>> newdata = np.array(list(interpolator(mapped))).reshape(img.shape)
+    >>> imageio.imwrite('newdata.jpg', np.clip(newdata, 0, 255).astype('uint8'))
+
 
     References
     ----------
@@ -140,8 +158,24 @@ class BsplineNDInterpolator(object):
         vbspl = np.vectorize(cubic)
         weights = np.prod(vbspl(ndindex - xi), axis=-1)
         ndindex = [tuple(v) for v in ndindex]
-        coeffs = np.array([self._coeffs[v] for v in ndindex])
-        return weights.dot(coeffs)
+
+        zero = np.zeros(self.ndim)
+        shape = np.array(self.shape)
+        coeffs = []
+        for ijk in ndindex:
+            offbounds = (zero > ijk) | (shape <= ijk)
+            if np.any(offbounds):
+                # Deal with offbounds samples
+                if self._off_bounds == 'constant':
+                    coeffs.append([0.0] * self.ncomp)
+                    continue
+                ijk = np.array(ijk, dtype=int)
+                ijk[ijk < 0] *= -1
+                ijk[ijk >= shape] = (2 * shape[ijk >= shape] - ijk[ijk >= shape] - 1).astype(int)
+                ijk = tuple(ijk.tolist())
+
+            coeffs.append(self._coeffs[ijk])
+        return weights.dot(np.array(coeffs, dtype=float))
 
 
 def _samples_to_coeffs(line, poles, tol=DBL_EPSILON):
