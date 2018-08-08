@@ -11,18 +11,20 @@ jobs:
       - run:
           name: "Install"
           command: |
+            cd 
             sudo pip install numpy imageio
             sudo pip install -e .[all]
 
       - run:
-          name: "Install"
+          name: "Test interpolation"
           command: |
             py.test --doctest-modules
 
       - run:
           name: Test Deploy to PyPi
           command: |
-            sudo pip install twine
+            cd
+            sudo pip install -U twine wheel setuptools
             echo "${CIRCLE_TAG}" > gridbspline/VERSION
             python setup.py sdist bdist_wheel
             twine upload --repository-url https://test.pypi.org/legacy/ dist/*
@@ -38,7 +40,8 @@ jobs:
       - run:
           name: Deploy to PyPi
           command: |
-            sudo pip install numpy imageio twine
+            sudo pip install -U twine wheel setuptools
+            sudo pip install numpy imageio
             echo "${CIRCLE_TAG}" > gridbspline/VERSION
             python setup.py sdist bdist_wheel
             twine upload dist/*
