@@ -22,8 +22,8 @@ def main():
         __description__,
         __longdesc__,
         __url__,
-        __download__,
-        PACKAGE_NAME,
+        __packagename__,
+        DOWNLOAD_URL,
         CLASSIFIERS,
         REQUIRES,
         SETUP_REQUIRES,
@@ -33,26 +33,16 @@ def main():
     )
 
     pkg_data = {
-        'mriqc': ['data/*.yml',
-                  'data/*.tfm',
-                  'data/csv/*.csv',
-                  'data/mclf_*.pklz',
-                  'data/reports/*.rst',
-                  'data/reports/*.html',
-                  'data/reports/resources/*',
-                  'data/reports/embed_resources/*',
-                  'data/tests/*',
-                  'data/mni/*.nii.gz'
-        ]
+        __packagename__: []
     }
 
     version = None
     cmdclass = {}
     root_dir = os.path.dirname(os.path.realpath(__file__))
-    if os.path.isfile(os.path.join(root_dir, 'mriqc', 'VERSION')):
-        with open(os.path.join(root_dir, 'mriqc', 'VERSION')) as vfile:
+    if os.path.isfile(os.path.join(root_dir, __packagename__, 'VERSION')):
+        with open(os.path.join(root_dir, __packagename__, 'VERSION')) as vfile:
             version = vfile.readline().strip()
-        pkg_data['mriqc'].insert(0, 'VERSION')
+        pkg_data[__packagename__].insert(0, 'VERSION')
 
     if version is None:
         import versioneer
@@ -60,7 +50,7 @@ def main():
         cmdclass = versioneer.get_cmdclass()
 
     setup(
-        name=PACKAGE_NAME,
+        name=__packagename__,
         version=version,
         description=__description__,
         long_description=__longdesc__,
@@ -76,7 +66,7 @@ def main():
         tests_require=TESTS_REQUIRES,
         extras_require=EXTRA_REQUIRES,
         url=__url__,
-        download_url=__download__,
+        download_url=DOWNLOAD_URL,
         entry_points={'console_scripts': [
             'mriqc=mriqc.bin.mriqc_run:main',
             'mriqc_clf=mriqc.bin.mriqc_clf:main',
