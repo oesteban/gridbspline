@@ -16,9 +16,9 @@ POLES = {
         np.sqrt(664.0 + np.sqrt(438976.0)) - np.sqrt(304.0) - 19.0],
     5: [
         np.sqrt(135.0 / 2.0 - np.sqrt(17745.0 / 4.0)) +
-         np.sqrt(105.0 / 4.0) - 13.0 / 2.0,
+        np.sqrt(105.0 / 4.0) - 13.0 / 2.0,
         np.sqrt(135.0 / 2.0 + np.sqrt(17745.0 / 4.0)) -
-         np.sqrt(105.0 / 4.0) - 13.0 / 2.0],
+        np.sqrt(105.0 / 4.0) - 13.0 / 2.0],
     6: [
         -0.48829458930304475513011803888378906211227916123938,
         -0.081679271076237512597937765737059080653379610398148,
@@ -95,7 +95,6 @@ class BsplineNDInterpolator(object):
             for line in coeffs:
                 line = _samples_to_coeffs(line, self._poles)
 
-
     def __call__(self, coords):
         """
         Interpolation at coordinates
@@ -115,6 +114,7 @@ class BsplineNDInterpolator(object):
             indexes[dim] = list(range(first, first + self._order + 1))
         print(indexes)
 
+
 def _samples_to_coeffs(line, poles, tol=DBL_EPSILON):
     # Compute the overall gain and apply
     gain = np.prod((1 - poles) * (1 - 1. / poles))
@@ -133,6 +133,7 @@ def _samples_to_coeffs(line, poles, tol=DBL_EPSILON):
             line[n] = p * (line[n + 1] - line[n])
 
     return line
+
 
 def _causal_c0(line, z, tol=DBL_EPSILON):
     length = len(line)
@@ -161,6 +162,6 @@ def _causal_c0(line, z, tol=DBL_EPSILON):
 
     return csum / (1.0 - zn ** 2)
 
+
 def _anticausal_cn(line, z):
     return (z / (z * z - 1.0)) * (z * line[-2] + line[-1])
-
