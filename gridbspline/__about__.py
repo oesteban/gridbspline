@@ -50,6 +50,9 @@ EXTRA_REQUIRES = {
         'sphinx_rtd_theme>=0.2.4',
         'imageio',
     ],
+    'test': [
+        'pytest',
+    ]
 }
 
 # Enable a handle to install all extra dependencies at once
