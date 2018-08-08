@@ -22,9 +22,10 @@ jobs:
       - run:
           name: Test Deploy to PyPi
           command: |
-            sudo pip install "setuptools>=27.0" twine
+            sudo pip install twine
             echo "${CIRCLE_TAG}" > gridbspline/VERSION
-            python setup.py sdist
+            python setup.py sdist bdist_wheel
+            twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
   deploy:
     docker:
@@ -37,9 +38,9 @@ jobs:
       - run:
           name: Deploy to PyPi
           command: |
-            sudo pip install "setuptools>=27.0" twine
+            sudo pip install numpy imageio twine
             echo "${CIRCLE_TAG}" > gridbspline/VERSION
-            python setup.py sdist
+            python setup.py sdist bdist_wheel
             twine upload dist/*
 
 workflows:
