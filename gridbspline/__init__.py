@@ -14,4 +14,3 @@ from .__about__ import (   # noqa
     __description__,
     __longdesc__
 )
-from .interpolate import BsplineNDInterpolator  # noqa
