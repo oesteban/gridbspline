@@ -16,7 +16,7 @@ __maintainer__ = 'Oscar Esteban'
 __copyright__ = ('Copyright %d, Center for Reproducible Neuroscience, '
                  'Stanford University') % date.today().year
 __credits__ = 'Oscar Esteban'
-__license__ = 'Apache'
+__license__ = 'Apache-2.0'
 __status__ = 'Prototype'
 __packagename__ = 'gridbspline'
 __description__ = """\
@@ -56,7 +56,7 @@ CLASSIFIERS = [
     'Development Status :: 3 - Alpha',
     'Intended Audience :: Science/Research',
     'Topic :: Scientific/Engineering :: Image Recognition',
-    'License :: OSI Approved :: BSD License',
+    'License :: OSI Approved :: Apache Software License',
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
 ]
