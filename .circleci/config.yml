@@ -5,6 +5,8 @@ jobs:
       - image: circleci/python:3.7
 
     working_directory: /tmp/src/gridbspline
+    environment:
+      - PATH: "$PATH:$HOME/.local/bin"
 
     steps:
       - checkout
