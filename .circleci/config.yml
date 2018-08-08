@@ -25,7 +25,7 @@ jobs:
           name: Build package and test Deploy to PyPi
           command: |
             pushd $HOME
-            sudo pip install -U twine wheel setuptools
+            sudo pip install -U twine setuptools
             popd
             echo "${CIRCLE_TAG}" > gridbspline/VERSION
             python setup.py sdist
@@ -43,11 +43,11 @@ jobs:
           name: Deploy to PyPi
           command: |
             pushd $HOME
-            sudo pip install -U twine wheel setuptools
+            sudo pip install -U twine setuptools
             sudo pip install numpy imageio
             popd
             echo "${CIRCLE_TAG}" > gridbspline/VERSION
-            python setup.py sdist bdist_wheel
+            python setup.py sdist
             twine upload dist/*
 
 workflows:
