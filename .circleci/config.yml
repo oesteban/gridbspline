@@ -28,7 +28,7 @@ jobs:
             sudo pip install -U twine wheel setuptools
             popd
             echo "${CIRCLE_TAG}" > gridbspline/VERSION
-            python setup.py sdist bdist_wheel
+            python setup.py sdist
             twine upload --repository-url https://test.pypi.org/legacy/ dist/* -u $TWINE_USERNAME -p $TWINE_PASSWORD
 
   deploy:
