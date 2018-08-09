@@ -21,15 +21,6 @@ jobs:
             export PATH=$PATH:$HOME/.local/bin
             py.test --doctest-modules
 
-      - run:
-          name: Build package and test Deploy to PyPi
-          command: |
-            pushd $HOME
-            sudo pip install -U twine setuptools
-            popd
-            echo "${CIRCLE_TAG}" > gridbspline/VERSION
-            python setup.py sdist
-            twine upload --repository-url https://test.pypi.org/legacy/ dist/* -u $TWINE_USERNAME -p $TWINE_PASSWORD
 
   deploy:
     docker:
@@ -39,6 +30,21 @@ jobs:
 
     steps:
       - checkout
+      - run:
+          name: Build package and test Deploy to PyPi
+          command: |
+            if [[ "$( git log --format=oneline -n 1 $CIRCLE_SHA1 | grep -i -E '\[skip[ _]?testpypi\]' )" != "" ]]; then
+              echo "Skipping Test Pypi"
+            else
+              pushd $HOME
+              sudo pip install -U twine setuptools
+              sudo pip install numpy imageio
+              popd
+              echo "${CIRCLE_TAG}" > gridbspline/VERSION
+              python setup.py sdist
+              twine upload --repository-url https://test.pypi.org/legacy/ dist/* -u $TWINE_USERNAME -p $TWINE_PASSWORD
+              rm -rf dist/
+            fi
       - run:
           name: Deploy to PyPi
           command: |
